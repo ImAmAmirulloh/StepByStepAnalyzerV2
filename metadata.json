@@ -1,0 +1,5 @@
+{
+  "name": "KeyMapper Automation Suite",
+  "description": "A collection of tools for KeyMapper automation, including Video Pattern Recorder, Image Flip Solver, and more.",
+  "requestFramePermissions": []
+}

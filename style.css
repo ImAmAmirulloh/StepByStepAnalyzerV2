@@ -43,6 +43,46 @@ body {
  gap: 10px;
  flex-wrap: wrap;
 }
+.sync-settings-box {
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 12px;
+    background: #e3fdfd;
+    border-radius: 8px;
+    border: 1px solid var(--primary);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.sync-settings-box label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #2c3e50;
+    cursor: pointer;
+    user-select: none;
+}
+.sync-settings-box input[type="text"] {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px;
+    border: 1px solid var(--primary);
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+.btn-test-link {
+    background: #9b59b6;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-test-link:hover {
+    background: #8e44ad;
+}
 .nav-header {
  text-align: center;
  border-bottom: 1px solid #eee;

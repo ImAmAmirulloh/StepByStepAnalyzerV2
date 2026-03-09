@@ -124,9 +124,17 @@
                 <input type="range" id="sensSlider" min="5" max="50" step="1" value="45">
                 <p style="font-size: 0.65rem; color: #999; margin: 4px 0 0 0;">Increase if matches aren't found. Decrease if matches are wrong.</p>
             </div>
-            <div class="row" style="align-items: center; margin-bottom: 15px; padding: 10px; background: #e3fdfd; border-radius: 8px; border: 1px solid var(--primary);">
-                <input type="checkbox" id="autoProcessCheckbox" style="width: 20px; height: 20px; margin-right: 10px; cursor: pointer; accent-color: var(--primary);">
-                <label for="autoProcessCheckbox" style="font-size: 0.9rem; font-weight: bold; color: #2c3e50; cursor: pointer; user-select: none;">Auto Process & Download</label>
+            <div class="sync-settings-box">
+                <div style="display: flex; align-items: center;">
+                    <input type="checkbox" id="autoProcessCheckbox" style="width: 20px; height: 20px; margin-right: 10px; cursor: pointer;">
+                    <label for="autoProcessCheckbox">Auto Process</label>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <input type="checkbox" id="syncAppCheckbox" style="width: 20px; height: 20px; margin-right: 10px; cursor: pointer;">
+                    <label for="syncAppCheckbox">Link App Sync</label>
+                </div>
+                <input type="text" id="appSyncLink" placeholder="KeyMapper shortcut link...">
+                <button id="btnTestSync" class="btn-test-link">Test Link</button>
             </div>
             <div class="row">
                 <input type="file" id="fileInput" class="action-btn" accept="image/*" style="flex: 1 100%;">
@@ -177,6 +185,25 @@
                 const autoProcessCheckbox = document.getElementById('autoProcessCheckbox');
                 if (autoProcessCheckbox) {
                     autoProcessCheckbox.addEventListener('change', saveSliderSettings);
+                }
+                const syncAppCheckbox = document.getElementById('syncAppCheckbox');
+                if (syncAppCheckbox) {
+                    syncAppCheckbox.addEventListener('change', saveSliderSettings);
+                }
+                const appSyncLink = document.getElementById('appSyncLink');
+                if (appSyncLink) {
+                    appSyncLink.addEventListener('input', saveSliderSettings);
+                }
+                const btnTestSync = document.getElementById('btnTestSync');
+                if (btnTestSync) {
+                    btnTestSync.addEventListener('click', () => {
+                        const link = document.getElementById('appSyncLink').value.trim();
+                        if (link) {
+                            window.location.href = link;
+                        } else {
+                            alert("Please paste a link first!");
+                        }
+                    });
                 }
             });
         }
@@ -343,6 +370,8 @@
                 settings[slider.id] = slider.value;
             });
             settings.autoProcessCheckbox = document.getElementById('autoProcessCheckbox').checked;
+            settings.syncAppCheckbox = document.getElementById('syncAppCheckbox').checked;
+            settings.appSyncLink = document.getElementById('appSyncLink').value;
             localStorage.setItem('memoryAnalyzerSettings', JSON.stringify(settings));
         }
 
@@ -363,6 +392,14 @@
                 const checkbox = document.getElementById('autoProcessCheckbox');
                 if (checkbox && typeof settings.autoProcessCheckbox === 'boolean') {
                     checkbox.checked = settings.autoProcessCheckbox;
+                }
+                const syncCheckbox = document.getElementById('syncAppCheckbox');
+                if (syncCheckbox && typeof settings.syncAppCheckbox === 'boolean') {
+                    syncCheckbox.checked = settings.syncAppCheckbox;
+                }
+                const syncLink = document.getElementById('appSyncLink');
+                if (syncLink && settings.appSyncLink) {
+                    syncLink.value = settings.appSyncLink;
                 }
             }
         }
@@ -442,6 +479,16 @@
             // a.download = 'Memory_4x7_Precision.json';
             document.body.appendChild(a);
             a.click();
+
+            // App Sync Logic
+            const syncEnabled = document.getElementById('syncAppCheckbox').checked;
+            const syncLink = document.getElementById('appSyncLink').value.trim();
+            if (syncEnabled && syncLink) {
+                setTimeout(() => {
+                    window.location.href = syncLink;
+                }, 500);
+            }
+
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         };

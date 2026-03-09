@@ -321,7 +321,20 @@ function downloadKeyMapperJSON() {
     a.download = 'KeyMapper_MemorySolve.json';
     document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    
+    // App Sync Logic
+    const syncEnabled = document.getElementById('syncAppCheckbox')?.checked;
+    const syncLink = document.getElementById('appSyncLink')?.value.trim();
+    if (syncEnabled && syncLink) {
+        setTimeout(() => {
+            window.location.href = syncLink;
+        }, 500);
+    }
+
+    setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }, 100);
 }
 
 // Don't forget to enable the button when analysis finishes!

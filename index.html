@@ -120,6 +120,15 @@
                 <input type="range" id="endTime" step="0.01" value="0">
             </div>
         </div>
+        <div class="sync-settings-box">
+            <div style="display: flex; align-items: center;">
+                <input type="checkbox" id="syncAppCheckbox" style="width: 20px; height: 20px; margin-right: 10px; cursor: pointer;">
+                <label for="syncAppCheckbox">Link App Sync</label>
+            </div>
+            <input type="text" id="appSyncLink" placeholder="Paste KeyMapper shortcut link here...">
+            <button id="btnTestSync" class="btn-test-link">Test Link</button>
+            <p style="font-size: 0.65rem; color: #666; width: 100%; margin: 0;">*If enabled, clicking download will also attempt to open KeyMapper app.</p>
+        </div>
         <div class="row">
             <input type="file" id="fileInput" class="action-btn" accept="video/*" style="flex: 1 100%;">
             <button id="processBtn" class="btn btn-start" disabled  style="flex: 1;">▶ START SCANNING</button>
@@ -240,7 +249,9 @@ function saveSliderSettings() {
         side: document.getElementById('marginSide').value,
         resW: document.getElementById('screenWidth').value,
         resH: document.getElementById('screenHeight').value,
-        coords: document.getElementById('customCoords').value
+        coords: document.getElementById('customCoords').value,
+        syncEnabled: document.getElementById('syncAppCheckbox').checked,
+        syncLink: document.getElementById('appSyncLink').value
     };
     localStorage.setItem('patternRecorderMargins', JSON.stringify(settings));
 }
@@ -254,6 +265,8 @@ function loadSliderSettings() {
         if (settings.side) document.getElementById('marginSide').value = settings.side;
         if (settings.resW) document.getElementById('screenWidth').value = settings.resW;
         if (settings.resH) document.getElementById('screenHeight').value = settings.resH;
+        if (settings.syncEnabled !== undefined) document.getElementById('syncAppCheckbox').checked = settings.syncEnabled;
+        if (settings.syncLink) document.getElementById('appSyncLink').value = settings.syncLink;
         
         // Load Koordinat, jika tidak ada pakai default
         document.getElementById('customCoords').value = settings.coords || DEFAULT_COORDS_TEXT;
@@ -267,13 +280,26 @@ function loadSliderSettings() {
 }
 
 // Sliders listener
-['marginTop', 'marginBottom', 'marginSide'].forEach(id => {
+['marginTop', 'marginBottom', 'marginSide', 'screenWidth', 'screenHeight'].forEach(id => {
   document.getElementById(id).addEventListener('input', (e) => {
-    const badgeId = id === 'marginTop' ? 'v-t' : (id === 'marginBottom' ? 'v-b' : 'v-s');
-    document.getElementById(badgeId).innerText = parseFloat(e.target.value).toFixed(1) + "%";
+    if (id.startsWith('margin')) {
+        const badgeId = id === 'marginTop' ? 'v-t' : (id === 'marginBottom' ? 'v-b' : 'v-s');
+        document.getElementById(badgeId).innerText = parseFloat(e.target.value).toFixed(1) + "%";
+    }
     saveSliderSettings();
-    drawOverlay();
+    if (id.startsWith('margin')) drawOverlay();
   });
+});
+
+document.getElementById('syncAppCheckbox').addEventListener('change', saveSliderSettings);
+document.getElementById('appSyncLink').addEventListener('input', saveSliderSettings);
+document.getElementById('btnTestSync').addEventListener('click', () => {
+    const link = document.getElementById('appSyncLink').value.trim();
+    if (link) {
+        window.location.href = link;
+    } else {
+        alert("Please paste a link first!");
+    }
 });
 
 //Load Video
@@ -662,6 +688,16 @@ document.getElementById('btnDownload').onclick = () => {
   a.download = `Pattern_Result_${timestamp}.json`;
   document.body.appendChild(a);
   a.click();
+  
+  // App Sync Logic
+  const syncEnabled = document.getElementById('syncAppCheckbox').checked;
+  const syncLink = document.getElementById('appSyncLink').value.trim();
+  if (syncEnabled && syncLink) {
+      setTimeout(() => {
+          window.location.href = syncLink;
+      }, 500);
+  }
+
   setTimeout(() => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
