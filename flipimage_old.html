@@ -124,10 +124,6 @@
                 <input type="range" id="sensSlider" min="5" max="50" step="1" value="45">
                 <p style="font-size: 0.65rem; color: #999; margin: 4px 0 0 0;">Increase if matches aren't found. Decrease if matches are wrong.</p>
             </div>
-            <div class="row" style="align-items: center; margin-bottom: 15px; padding: 10px; background: #e3fdfd; border-radius: 8px; border: 1px solid var(--primary);">
-                <input type="checkbox" id="autoProcessCheckbox" style="width: 20px; height: 20px; margin-right: 10px; cursor: pointer; accent-color: var(--primary);">
-                <label for="autoProcessCheckbox" style="font-size: 0.9rem; font-weight: bold; color: #2c3e50; cursor: pointer; user-select: none;">Auto Process & Download</label>
-            </div>
             <div class="row">
                 <input type="file" id="fileInput" class="action-btn" accept="image/*" style="flex: 1 100%;">
                 <button id="btnProcess" class="action-btn" disabled style="flex: 1;">🔍 Find Pairs</button>
@@ -173,11 +169,6 @@
                     slider.addEventListener('change', saveSliderSettings);
                     slider.addEventListener('input', saveSliderSettings);
                 });
-                // Add event listener for the new checkbox
-                const autoProcessCheckbox = document.getElementById('autoProcessCheckbox');
-                if (autoProcessCheckbox) {
-                    autoProcessCheckbox.addEventListener('change', saveSliderSettings);
-                }
             });
         }
 
@@ -190,11 +181,6 @@
                 overlay.height = img.naturalHeight;
                 drawGrid();
                 btnProcess.disabled = false;
-                
-                // If auto-process is checked, trigger it
-                if (document.getElementById('autoProcessCheckbox').checked) {
-                    btnProcess.onclick();
-                }
             };
         };
 
@@ -320,13 +306,7 @@
             finally {
                 document.getElementById('loadingOverlay').style.display = 'none';
                 btnProcess.disabled = false;
-                const hasResults = detectedSteps.length > 0;
-                document.getElementById('btnDownload').style.display = hasResults ? 'block' : 'none';
-                
-                // If auto-process is checked and we have results, trigger download
-                if (hasResults && document.getElementById('autoProcessCheckbox').checked) {
-                    document.getElementById('btnDownload').onclick();
-                }
+                document.getElementById('btnDownload').style.display = detectedSteps.length > 0 ? 'block' : 'none';
             }
         };
 
@@ -342,7 +322,6 @@
             sliders.forEach(slider => {
                 settings[slider.id] = slider.value;
             });
-            settings.autoProcessCheckbox = document.getElementById('autoProcessCheckbox').checked;
             localStorage.setItem('memoryAnalyzerSettings', JSON.stringify(settings));
         }
 
@@ -351,19 +330,14 @@
             const saved = localStorage.getItem('memoryAnalyzerSettings');
             if (saved) {
                 const settings = JSON.parse(saved);
-                // Load sliders
                 Object.keys(settings).forEach(id => {
                     const slider = document.getElementById(id);
-                    if (slider && slider.type === 'range') {
+                    if (slider) {
                         slider.value = settings[id];
+                        // Trigger a 'input' event so the grid updates visually immediately
                         slider.dispatchEvent(new Event('input'));
                     }
                 });
-                // Load checkbox state
-                const checkbox = document.getElementById('autoProcessCheckbox');
-                if (checkbox && typeof settings.autoProcessCheckbox === 'boolean') {
-                    checkbox.checked = settings.autoProcessCheckbox;
-                }
             }
         }
 

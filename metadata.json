@@ -1,5 +1,0 @@
-{
-  "name": "StepByStep Analyzer",
-  "description": "A tool to analyze video patterns and generate KeyMapper JSON for automation.",
-  "requestFramePermissions": []
-}
