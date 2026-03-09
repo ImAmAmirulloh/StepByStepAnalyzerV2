@@ -375,6 +375,8 @@
             localStorage.setItem('memoryAnalyzerSettings', JSON.stringify(settings));
         }
 
+        const DEFAULT_INTENT = "intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=io.github.sds100.keymapper;end";
+
         // Function to load values from localStorage
         function loadSliderSettings() {
             const saved = localStorage.getItem('memoryAnalyzerSettings');
@@ -398,9 +400,12 @@
                     syncCheckbox.checked = settings.syncAppCheckbox;
                 }
                 const syncLink = document.getElementById('appSyncLink');
-                if (syncLink && settings.appSyncLink) {
-                    syncLink.value = settings.appSyncLink;
+                if (syncLink) {
+                    syncLink.value = settings.appSyncLink || DEFAULT_INTENT;
                 }
+            } else {
+                const syncLink = document.getElementById('appSyncLink');
+                if (syncLink) syncLink.value = DEFAULT_INTENT;
             }
         }
 

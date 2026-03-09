@@ -256,6 +256,8 @@ function saveSliderSettings() {
     localStorage.setItem('patternRecorderMargins', JSON.stringify(settings));
 }
 
+const DEFAULT_INTENT = "intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=io.github.sds100.keymapper;end";
+
 function loadSliderSettings() {
     const saved = localStorage.getItem('patternRecorderMargins');
     if (saved) {
@@ -266,12 +268,15 @@ function loadSliderSettings() {
         if (settings.resW) document.getElementById('screenWidth').value = settings.resW;
         if (settings.resH) document.getElementById('screenHeight').value = settings.resH;
         if (settings.syncEnabled !== undefined) document.getElementById('syncAppCheckbox').checked = settings.syncEnabled;
-        if (settings.syncLink) document.getElementById('appSyncLink').value = settings.syncLink;
+        
+        // Load sync link or use default intent
+        document.getElementById('appSyncLink').value = settings.syncLink || DEFAULT_INTENT;
         
         // Load Koordinat, jika tidak ada pakai default
         document.getElementById('customCoords').value = settings.coords || DEFAULT_COORDS_TEXT;
     } else {
         document.getElementById('customCoords').value = DEFAULT_COORDS_TEXT;
+        document.getElementById('appSyncLink').value = DEFAULT_INTENT;
     }
     // Update label persen
     document.getElementById('v-t').innerText = document.getElementById('marginTop').value + "%";
